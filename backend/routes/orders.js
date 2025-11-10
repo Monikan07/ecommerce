@@ -5,17 +5,15 @@ const Product = require('../models/Product');
 const auth = require('../middleware/auth');
 
 const isAdmin = (req, res, next) => {
-  if (!req.user || req.user.role !== 'admin') {
-    return res.status(403).json({ message: 'Forbidden - Admins only' });
-  }
-  next();
+  if (req.user && req.user.role === 'admin') next();
+  else res.status(403).json({ message: 'Access denied' });
 };
+
 
 router.post('/', auth, async (req, res) => {
   try {
     const { items, shippingAddress } = req.body;
     if (!items || items.length === 0) return res.status(400).json({ message: 'No items' });
-    // compute total
     let total = 0;
     const processedItems = [];
     for (const it of items) {
@@ -80,6 +78,36 @@ router.put('/:id/cancel', auth, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err.message });
+  }
+});
+
+router.put('/:id/status', auth, isAdmin, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    order.status = req.body.status;
+    await order.save();
+
+    res.json({ message: 'Order status updated successfully', order });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.patch('/:id/status', auth, isAdmin, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    order.status = req.body.status;
+    await order.save();
+
+    res.json({ message: 'Order status updated successfully', order });
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
