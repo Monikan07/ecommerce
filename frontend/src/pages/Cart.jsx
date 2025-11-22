@@ -94,7 +94,7 @@ export default function Cart() {
       <style>{`
         .cart-page {
           position: relative;
-          min-height: 80vh;
+          min-height: 90vh;
           display: flex;
           justify-content: flex-start; /* align left */
           align-items: flex-start;

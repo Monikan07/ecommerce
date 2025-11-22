@@ -5,18 +5,29 @@ import { useNavigate } from 'react-router-dom';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const login = async () => {
+    setError('');
+
     try {
-      const res = await API.post('/auth/login', { email, password });
+      const res = await API.post('/auth/login', {
+        email,
+        password,
+      });
+
+      // Save token and user info to localStorage
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
-      navigate('/');
+
+      navigate('/'); // Redirect to homepage
     } catch (err) {
-      alert(err?.response?.data?.message || 'Login failed');
+      console.log(err.response);
+      setError(err.response?.data?.message || 'Login failed');
     }
   };
+
 
   return (
     <div className="login-container">
