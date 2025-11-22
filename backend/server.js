@@ -11,7 +11,14 @@ connectDB();
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:3000'], credentials: true }));
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://ecommerce-4-xrkl.onrender.com'   // your Render frontend
+  ],
+  credentials: true,
+}));
 
 app.use('/api/auth', require('./routes/auth'));
 
